@@ -5,11 +5,11 @@ import shutil
 file_name = "demo_script"
 
 # Stuff used to make this work as a pip-installable gist:
-if __name__ == "__main__":
-    # The name of the file next to this (without the .py)
-    if not os.path.exists(file_name):
-        os.mkdir(file_name)
-    shutil.copyfile(f"{file_name}.py", f"{file_name}/__init__.py")
+# if __name__ == "__main__":
+#     # The name of the file next to this (without the .py)
+#     if not os.path.exists(file_name):
+#         os.mkdir(file_name)
+#     shutil.copyfile(f"{file_name}.py", f"{file_name}/__init__.py")
 
 setup(
     name=file_name,
