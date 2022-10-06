@@ -375,20 +375,24 @@ def run(
     # NOTE: Profiler output is a big string here. We could inspect and report it if needed.
     profiler_output = trainer.profiler.summary()
 
-    # NOTE: There appears to be something weird going on when evaluating with
-    # >1 GPU! hence we re-create a Trainer here just to run the evaluation.
+    # BUG: There appears to be something weird going on when evaluating with
+    # >1 GPU! In the meantime, we re-create a Trainer here just to run the evaluation.
     # TODO: actually load the best checkpoint. It's hard to do when switching trainers.
     trainer = Trainer(
         devices=1,
         accelerator="auto",
+        enable_checkpointing=False,
         # resume_from_checkpoint="best",
     )
     # setup for all stages (if not done already, which is weird.)
+    # TODO: Bug in CIFAR10DataModule, where .setup("validate") doesn't work.
+    datamodule.prepare_data()
+    datamodule.setup()
     if evaluate_on_test_set:
         # NOTE: Only do this AFTER HPO is done, otherwise your HP's are tuned on the test set!
         # TODO: When running on the test set, also log the test results.
-        return trainer.test(model, datamodule, ckpt_path="best", verbose=True)
-    return trainer.validate(model, datamodule, ckpt_path="best", verbose=True)
+        return trainer.test(model, datamodule, verbose=True)
+    return trainer.validate(model, datamodule, verbose=True)
 
 
 def _get_backbone_network(
